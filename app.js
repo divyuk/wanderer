@@ -18,6 +18,27 @@ app.get('/api/v1/tours' , (req,res)=>{
 })
 });
 
+// Get using id
+app.get('/api/v1/tours/:id' , (req,res)=>{
+
+    const id = req.params.id * 1 // converting the string to number
+    const tour = tours.find(ele => ele.id === id);
+    console.log(tour)
+    if(tour){
+    res.status(200).json({
+        'status' : 'success',
+        data:{
+            tour
+        }
+    })}
+    else{
+        res.status(404).json({
+            'status' : 'fail',
+        })
+    }
+
+})
+
 
 // POST
 app.post('/api/v1/tours' , (req,res)=>{
