@@ -11,7 +11,7 @@ and order matter.*/
 //     next();
 // })
 
-router.param('id', tourController.checkID);
+// router.param('id', tourController.checkID);
 
 // Routes for other HTTP requests
 router
