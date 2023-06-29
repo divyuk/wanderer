@@ -17,7 +17,7 @@ and order matter.*/
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.checkBody, tourController.createTour); // passes 1st from checkBody middleware then to createTour middleware.
+  .post(tourController.createTour);
 
 router
   .route('/:id')
