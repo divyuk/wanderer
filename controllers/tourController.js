@@ -10,17 +10,23 @@ exports.checkBody = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = (req, res) => {
-  console.log(req.requestTime);
-
-  res.status(200).json({
-    status: 'success',
-    requestedAt: req.requestTime,
-    // results: tours.length,
-    // data: {
-    //   tours
-    // }
-  });
+exports.getAllTours = async (req, res) => {
+  const tours = await Tour.find();
+  try {
+    res.status(200).json({
+      status: 'success',
+      requestedAt: req.requestTime,
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
 };
 
 exports.getTour = (req, res) => {
