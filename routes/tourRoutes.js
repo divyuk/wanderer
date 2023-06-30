@@ -13,6 +13,10 @@ and order matter.*/
 
 // router.param('id', tourController.checkID);
 
+router
+  .route('/top-5-cheap')
+  .get(tourController.aliasTopTours, tourController.getAllTours);
+
 // Routes for other HTTP requests
 router
   .route('/')
