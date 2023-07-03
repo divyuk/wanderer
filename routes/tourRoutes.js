@@ -19,6 +19,7 @@ router
 
 // Router for aggregation Pipeline
 router.route('/tour-stats').get(tourController.TourStats);
+router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
 // Routes for other HTTP requests
 router
