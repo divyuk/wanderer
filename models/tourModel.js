@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const mongoose = require('mongoose');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
@@ -42,6 +43,17 @@ const tourSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: [true, 'A tour must have a price'],
+    },
+    priceDiscount: {
+      type: Number,
+      // Custom validators
+      validate: {
+        validator: function (val) {
+          // this only points to current doc on NEW document creation not on Update
+          return val < this.price;
+        },
+        message: 'Discount price ({VALUE}) should be below regular price',
+      },
     },
     summary: {
       type: String,
@@ -104,6 +116,12 @@ tourSchema.pre(/^find/, function (next) {
 
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
+  next();
+});
+
+//! Aggregate Pipeline
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
 
