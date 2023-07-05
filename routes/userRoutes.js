@@ -5,6 +5,7 @@ const authController = require('./../controllers/authController');
 const router = express.Router();
 
 router.post('/signup', authController.signup);
+router.post('/login', authController.login);
 
 router
   .route('/')
@@ -13,7 +14,7 @@ router
 
 router
   .route('/:id')
-  .get(userController.getUser)
+  .get(userController.getAllUsers)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
 
