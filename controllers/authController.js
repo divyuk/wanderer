@@ -17,6 +17,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    role: req.body.role,
   });
 
   //? As soon as a new user is Signed Up he is also logged in.
@@ -94,3 +95,17 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// We cant pass args in middleware function, hence creating a wrapper function to do it.
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles ['admin', 'lead-guide']. role='user'
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+
+    next();
+  };
+};
