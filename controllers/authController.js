@@ -96,10 +96,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-// We cant pass args in middleware function, hence creating a wrapper function to do it.
-exports.restrictTo = (...roles) => {
-  return (req, res, next) => {
-    // roles ['admin', 'lead-guide']. role='user'
+exports.restrictTo =
+  (...roles) =>
+  (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(
         new AppError('You do not have permission to perform this action', 403)
@@ -108,4 +107,3 @@ exports.restrictTo = (...roles) => {
 
     next();
   };
-};
