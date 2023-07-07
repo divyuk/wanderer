@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const validator = require('validator');
@@ -40,6 +41,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 // Running a Middleware function between SAVE and write commands in Database.
@@ -52,7 +55,12 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined; // we dont want to save in DB
   next();
 });
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
 
+  this.passwordChangedAt = Date.now() - 1000; // Saving in Db is slower then Creating JWT hence delay of 1sec
+  next();
+});
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
@@ -72,6 +80,22 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 
   // False means NOT changed
   return false;
+};
+
+// Creating token for the password changed. Encypting using builtin package crypto
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 // Create a Model out of the Schema
