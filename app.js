@@ -1,20 +1,21 @@
 const express = require('express');
 const tourRouter = require('./routes/tourRoutes');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utilis/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
+// Calling express
 const app = express();
-//-------------------------//
-//! Middleware -> the below 2 are required for all the routes
-app.use(express.json());
-app.use((req, res, next) => {
-  console.log('Hello from the middleware 👋');
-  next();
-});
 
-// Rate Limiter GLobal Middleware
+//! Global Middleware
+
+//1. Set Security HTTP headers
+// Use Helmet!
+app.use(helmet());
+
+//2. Rate Limiter GLobal Middleware
 // Limiter is middleware function
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -23,9 +24,15 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: 'Too many  reques try again later',
 });
-
 // Apply the rate limiting middleware to all requests
 app.use('/api', limiter);
+
+//3.Body parse, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
+app.use((req, res, next) => {
+  console.log('Hello from the middleware 👋');
+  next();
+});
 
 //------------------------//
 // Mounting the Routers
