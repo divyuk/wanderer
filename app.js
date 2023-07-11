@@ -2,6 +2,8 @@ const express = require('express');
 const tourRouter = require('./routes/tourRoutes');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utilis/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -29,6 +31,13 @@ app.use('/api', limiter);
 
 //3.Body parse, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+
+//4. Data Sanitization against NOSQL query Injection
+app.use(mongoSanitize());
+//5.  Data Sanitization against Cross
+app.use(xss());
+
+//6. Testing Purpose Middleware
 app.use((req, res, next) => {
   console.log('Hello from the middleware 👋');
   next();
