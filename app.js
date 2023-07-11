@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 const userRouter = require('./routes/userRoutes');
 const AppError = require('./utilis/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -37,7 +38,14 @@ app.use(mongoSanitize());
 //5.  Data Sanitization against Cross
 app.use(xss());
 
-//6. Testing Purpose Middleware
+//8. Prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: ['duration', 'ratingsQuantity', 'difficulty', 'price'],
+  })
+);
+
+//7. Testing Purpose Middleware
 app.use((req, res, next) => {
   console.log('Hello from the middleware 👋');
   next();
